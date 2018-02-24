@@ -16,5 +16,10 @@ namespace hs_projekt_wzsi
         {
             InitializeComponent();
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

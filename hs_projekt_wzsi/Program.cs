@@ -8,6 +8,8 @@ namespace hs_projekt_wzsi
 {
     static class Program
     {
+        
+    
         /// <summary>
         /// Główny punkt wejścia dla aplikacji.
         /// </summary>
@@ -17,6 +19,16 @@ namespace hs_projekt_wzsi
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+
+            Game game = new Game();
+
+           foreach(Card c in game.Deck1)
+            {
+                Console.WriteLine("Card life: {0}", c.lifePts);
+            }
+
         }
+
+
     }
 }
