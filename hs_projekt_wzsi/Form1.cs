@@ -15,6 +15,17 @@ namespace hs_projekt_wzsi
         public Form1()
         {
             InitializeComponent();
+
+            Game game = new Game();
+
+            List<Card> shuffledDeck1 = new List<Card>();
+        
+            shuffledDeck1 = game.ShuffleList(game.Deck1);
+          
+            foreach (Card c in shuffledDeck1)
+            {
+                textBox1.Text += "Card life: " + c.lifePts + "\r\n";
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

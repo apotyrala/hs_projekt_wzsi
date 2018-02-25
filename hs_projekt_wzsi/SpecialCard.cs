@@ -2,8 +2,8 @@
 {
     public class SpecialCard : Card {
 
-        int lifePts; //zycie karty
-        int attackPts; // punkty ataku (odejmowane od zycia przeciwnika)
-        int manaPts; // koszt karty
+        public int healPts { get; set; }
+        public int damagePts { get; set; }
+        
     };
 }

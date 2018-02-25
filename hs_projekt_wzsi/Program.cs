@@ -20,12 +20,7 @@ namespace hs_projekt_wzsi
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
 
-            Game game = new Game();
 
-           foreach(Card c in game.Deck1)
-            {
-                Console.WriteLine("Card life: {0}", c.lifePts);
-            }
 
         }
 
