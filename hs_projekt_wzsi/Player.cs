@@ -4,7 +4,7 @@ namespace hs_projekt_wzsi
 {
     public class Player {
 
-        int lifePts; // punkty zycia gracza
+        public int lifePts; // punkty zycia gracza
         //int manaPts;
 
         public List<Card> cardsInHand; //karty w dloni gracza

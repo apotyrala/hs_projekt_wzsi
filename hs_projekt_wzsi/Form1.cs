@@ -18,16 +18,17 @@ namespace hs_projekt_wzsi
 
             //do zmiany - na razie jest to tylko do podgladu
 
-            Game game = new Game();
+        //    Game game = new Game();
 
-            List<Card> shuffledDeck1 = new List<Card>();
+        //    List<Card> shuffledDeck1 = new List<Card>();
         
-            shuffledDeck1 = game.ShuffleList(game.Deck1);
+        //    shuffledDeck1 = game.ShuffleList(game.Deck1);
           
-            foreach (Card c in shuffledDeck1)
-            {
-                textBox1.Text += "Card life: " + c.lifePts + "\r\n";
-            }
+        //    foreach (Card c in shuffledDeck1)
+        //    {
+        //        textBox1.Text += "Card life: " + c.lifePts + "\r\n";
+        //    }
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

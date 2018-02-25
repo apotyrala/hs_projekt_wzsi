@@ -2,12 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace hs_projekt_wzsi
 {
 
     public class Game
     {
+
         public List<Card> Deck1 = new List<Card>()
             {
             new Card { lifePts = 3, attackPts = 10, manaPts = 5 },
@@ -80,19 +82,77 @@ namespace hs_projekt_wzsi
                 shuffledDeck2.RemoveAt(i);
             }
 
-            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)
+            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
             player1.cardsOnTable[0] = player1.cardsInHand[0];
             player1.cardsInHand.RemoveAt(0);//karta usunieta z reki
 
             player2.cardsOnTable[0] = player2.cardsInHand[0];
             player2.cardsInHand.RemoveAt(0);
 
-            //dobieranie karty(dla ulatwienia pierwsza z listy)
-            player1.cardsInHand.Add(shuffledDeck1[0]);
-            shuffledDeck1.RemoveAt(0);//karta usunieta z puli
 
-            player2.cardsInHand.Add(shuffledDeck2[0]);
-            shuffledDeck2.RemoveAt(0);
+            while (player1.lifePts >= 0 && player2.lifePts >= 0)
+            {
+                int k = 1; //zmienna do odejmowanie punktow zycia gracza
+
+                if (shuffledDeck1.Count != 0)  //jezeli mozna jeszcze pobrac karty
+                {
+                    //dobieranie karty(dla ulatwienia pierwsza z listy)
+                    player1.cardsInHand.Add(shuffledDeck1[0]);
+                    shuffledDeck1.RemoveAt(0);//karta usunieta z puli
+                    player1.lifePts = player1.lifePts - k;//odjecie punktow zycia graczowi za pobranie karty- po kazdej turze o 1 wiecej
+                }
+
+                if (shuffledDeck2.Count != 0)
+                {
+                    player2.cardsInHand.Add(shuffledDeck2[0]);
+                    shuffledDeck2.RemoveAt(0);
+                    player2.lifePts = player2.lifePts - k;
+                }
+
+                k = k + 1;
+
+                //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
+                player1.cardsOnTable[0] = player1.cardsInHand[0];
+                player1.cardsInHand.RemoveAt(0);//karta usunieta z reki
+
+                player2.cardsOnTable[0] = player2.cardsInHand[0];
+                player2.cardsInHand.RemoveAt(0);
+
+                //atak-najpierw ruch gracza 1 (gracz 1 atakuje swoją pierwszą kartą pierwszą kartę przeciwnika (dla ułatwienia)), 
+                //od punktow zycia karty gracza 2 odejmowane sa punkty ataku karty gracza 1
+
+                player2.cardsOnTable[0].lifePts = player2.cardsOnTable[0].lifePts - player1.cardsOnTable[0].attackPts;
+
+                //jezeli po odjeciu od punktow ataku od punktow zycia liczba punktow zycia spadla < 0, karta wylatuje ze stolu
+                if(player2.cardsOnTable[0].lifePts < 0)
+                {
+                    player2.cardsOnTable.RemoveAt(0);
+                }
+                
+                //atak gracza 2
+                player1.cardsOnTable[0].lifePts = player1.cardsOnTable[0].lifePts - player2.cardsOnTable[0].attackPts;
+
+                if (player1.cardsOnTable[0].lifePts < 0)
+                {
+                    player1.cardsOnTable.RemoveAt(0);
+                }
+
+
+            }
+           
+            if (player1.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 1 przegral");
+            }
+            else if (player2.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 2 przegral");
+            }
+            else
+            {
+                Console.WriteLine("Remis");
+            }
+
         }
 
     }
