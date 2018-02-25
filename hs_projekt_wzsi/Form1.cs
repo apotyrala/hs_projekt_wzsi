@@ -16,6 +16,8 @@ namespace hs_projekt_wzsi
         {
             InitializeComponent();
 
+            //do zmiany - na razie jest to tylko do podgladu
+
             Game game = new Game();
 
             List<Card> shuffledDeck1 = new List<Card>();
