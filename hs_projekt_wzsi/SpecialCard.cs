@@ -1,6 +1,6 @@
 ﻿namespace hs_projekt_wzsi
 {
-    public class SpecialCard {
+    public class SpecialCard : Card {
 
         int lifePts; //zycie karty
         int attackPts; // punkty ataku (odejmowane od zycia przeciwnika)

@@ -11,7 +11,22 @@ namespace hs_projekt_wzsi
             {
             new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new SpecialCard { lifePts = 5, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+
+             };
+
+        public List<Card> Deck2 = new List<Card>()
+            {
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
+            new SpecialCard { lifePts = 5, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
