@@ -12,8 +12,23 @@ namespace hs_projekt_wzsi
 
         public List<Card> Deck1 = new List<Card>()
             {
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new SpecialCard { lifePts = 1, attackPts = 10, manaPts = 5, damagePts =3 },
+            new SpecialCard { lifePts = 1, attackPts = 10, manaPts = 5, healPts=1 },
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+
+             };
+
+        public List<Card> Deck2 = new List<Card>()
+            {
             new Card { lifePts = 3, attackPts = 10, manaPts = 5 },
-            new SpecialCard { lifePts = 4, attackPts = 10, manaPts = 5, damagePts =3 },
+            new SpecialCard { lifePts = 4, attackPts = 10, manaPts = 5, damagePts =3},
             new SpecialCard { lifePts = 5, attackPts = 10, manaPts = 5, healPts=1 },
             new Card { lifePts = 3, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 4, attackPts = 10, manaPts = 5 },
@@ -22,21 +37,6 @@ namespace hs_projekt_wzsi
             new Card { lifePts = 7, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 8, attackPts = 10, manaPts = 5 },
             new Card { lifePts = 9, attackPts = 10, manaPts = 5 },
-
-             };
-
-        public List<Card> Deck2 = new List<Card>()
-            {
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new SpecialCard { lifePts = 5, attackPts = 10, manaPts = 5, damagePts =3},
-            new SpecialCard { lifePts = 5, attackPts = 10, manaPts = 5, healPts=1 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
 
              };
 
