@@ -16,13 +16,14 @@ namespace hs_projekt_wzsi
         [STAThread]
         static void Main()
         {
+            Console.WriteLine("Blabla");
+            Game game = new Game();
+
+         
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
 
-            Game game = new Game();
-
-            game.GamePlay();
 
         }
 
