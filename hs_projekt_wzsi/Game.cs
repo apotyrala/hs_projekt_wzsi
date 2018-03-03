@@ -40,14 +40,13 @@ namespace hs_projekt_wzsi
 
              };
 
-       public List<Card> ShuffleList<Card>(List<Card> inputList)
+        public List<Card> ShuffleList<Card>(List<Card> inputList)
         {
             List<Card> randomList = new List<Card>();
-
-            Random r = new Random();
             int randomIndex = 0;
             while (inputList.Count > 0)
             {
+                Random r = new Random();
                 randomIndex = r.Next(0, inputList.Count); // wybierz randomowy obiekt z losty
                 randomList.Add(inputList[randomIndex]); //dodaj go do nowej, randomowej listy
                 inputList.RemoveAt(randomIndex); //usun by uniknac duplikatow
@@ -58,7 +57,6 @@ namespace hs_projekt_wzsi
 
         public void GamePlay() // rozgrywka
         {
-            Random r = new Random();
             Player player1 = new Player(20);
             Player player2 = new Player(20);
 
@@ -73,135 +71,116 @@ namespace hs_projekt_wzsi
 
             for (int i = 0; i < 4; i++)
             {
-                player1.cardsInHand.Insert(i,shuffledDeck1[i]);
-                shuffledDeck1.RemoveAt(i); //usuniecie pobranych kart
+                GetCard(player1, shuffledDeck1, i, 0);
             }
 
             for (int i = 0; i < 3; i++)
             {
-                player2.cardsInHand.Insert(i, shuffledDeck2[i]);
-                shuffledDeck2.RemoveAt(i);
+                GetCard(player2, shuffledDeck2, i, 0);
             }
 
-            updateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
 
 
             //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
-            player1.cardsOnTable.Insert(0, player1.cardsInHand[0]);
-            player1.cardsInHand.RemoveAt(0);//karta usunieta z reki
-            player2.cardsOnTable.Insert(0, player2.cardsInHand[0]);
-            player2.cardsInHand.RemoveAt(0);
-            
+            ThrowCard(player1, 0);
+            ThrowCard(player2, 0);
+
             do
             {
                 int k = 1; //zmienna do odejmowanie punktow zycia gracza
 
-                if (shuffledDeck1.Count != 0)  //jezeli mozna jeszcze pobrac karty
-                {
-                    int a = r.Next(0, shuffledDeck1.Count);
-                    //dobieranie karty(dla ulatwienia pierwsza z listy)
-                    player1.cardsInHand.Add(shuffledDeck1[a]);
-                    shuffledDeck1.RemoveAt(a);//karta usunieta z puli
-                    player1.lifePts = player1.lifePts - k;//odjecie punktow zycia graczowi za pobranie karty- po kazdej turze o 1 wiecej
-                }
-
-                if (shuffledDeck2.Count != 0)
-                {
-                    int b = r.Next(0, shuffledDeck2.Count);
-                    player2.cardsInHand.Add(shuffledDeck2[b]);
-                    shuffledDeck2.RemoveAt(b);
-                    player2.lifePts = player2.lifePts - k;
-                }
+                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1), k);
+                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2), k);
 
                 k = k + 1;
 
-                if (player1.cardsInHand.Count != 0) //jesli gracz ma karty w rece
-                {
-                    int c = r.Next(0, player1.cardsInHand.Count);
-                    //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
-                    player1.cardsOnTable.Insert(0, player1.cardsInHand[c]);
-                    player1.cardsInHand.RemoveAt(c);//karta usunieta z reki
-                }
+                //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
+                ThrowCard(player1, GetRandomCard(player1.cardsInHand));
+                ThrowCard(player2, GetRandomCard(player2.cardsInHand));
 
-                if (player2.cardsInHand.Count != 0)
-                {
-                    int d = r.Next(0, player2.cardsInHand.Count);
-                    player2.cardsOnTable.Insert(0, player2.cardsInHand[d]);
-                    player2.cardsInHand.RemoveAt(d);
-                }
                 //atak-najpierw ruch gracza 1 (gracz 1 atakuje swoją pierwszą kartą pierwszą kartę przeciwnika (dla ułatwienia)), 
                 //od punktow zycia karty gracza 2 odejmowane sa punkty ataku karty gracza 1
-
-                if (player1.cardsOnTable.Count != 0)
-                {
-                    int e = r.Next(0, player2.cardsOnTable.Count);
-                    int f = r.Next(0, player1.cardsOnTable.Count);
-                    if (player2.cardsOnTable.Count != 0) //jesli gracz ma karty na stole
-                    {
-
-                        player2.cardsOnTable[e].lifePts = player2.cardsOnTable[e].lifePts - player1.cardsOnTable[f].attackPts;
-
-                        //jezeli po odjeciu od punktow ataku od punktow zycia liczba punktow zycia spadla < 0, karta wylatuje ze stolu
-                        if (player2.cardsOnTable[e].lifePts < 0)
-                        {
-                            player2.cardsOnTable.RemoveAt(e);
-                        }
-                    }
-                    else
-                    {
-                        player2.lifePts = player2.lifePts - player1.cardsOnTable[f].attackPts;
-                    }
-                }
+                Attack(player1, player2);
                 //atak gracza 2
+                Attack(player2, player1);
 
-                if (player2.cardsOnTable.Count != 0)
-                {
-                    int g = r.Next(0, player1.cardsOnTable.Count);
-                    int h = r.Next(0, player2.cardsOnTable.Count);
-                    if (player1.cardsOnTable.Count != 0)
-                    {
-                        player1.cardsOnTable[g].lifePts = player1.cardsOnTable[g].lifePts - player2.cardsOnTable[h].attackPts;
-
-                        if (player1.cardsOnTable[g].lifePts < 0)
-                        {
-                            player1.cardsOnTable.RemoveAt(g);
-                        }
-                    }
-                    else
-                    {
-                        player1.lifePts = player1.lifePts - player2.cardsOnTable[h].attackPts;
-                    }
-                }
-                updateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+                UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
             } while (player1.lifePts >= 0 && player2.lifePts >= 0);
 
 
             if (player1.lifePts < 0)
             {
-                //l.Text = "Gracz 1 przegral";
                 Console.WriteLine("Gracz 1 przegral");
             }
             else if (player2.lifePts < 0)
             {
-                //l.Text ="Gracz 2 przegral";
                 Console.WriteLine("Gracz 2 przegral");
             }
             else
             {
-                //l.Text = "Remis";
                 Console.WriteLine("Remis");
             }
             Console.ReadKey();
 
         }
 
-        public string DisplayCard(Card card)
+        private string DisplayCard(Card card)
         {
             return ("Attack: " + card.attackPts.ToString() + ", Life: " + card.lifePts.ToString() + ", Mana: " +
                     card.manaPts.ToString());
         }
 
-        public void updateCardsState(List<Card> pl1d, List<Card> pl2d, List<Card> pl1h, List<Card> pl2h, Player pl1, Player pl2)
+        private void GetCard(Player player, List<Card> deck, int nr, int k)
+        {
+            if (deck.Count != 0) //jezeli mozna jeszcze pobrac karty
+            {
+                player.cardsInHand.Add(deck[nr]);
+                deck.RemoveAt(nr);
+                player.lifePts = player.lifePts - k;
+            }
+        }
+
+        private void ThrowCard(Player player, int nr)
+        {
+            if (player.cardsInHand.Count != 0) //jesli gracz ma karty w rece
+            {
+                player.cardsOnTable.Add(player.cardsInHand[nr]);
+                player.cardsInHand.RemoveAt(nr);
+            }
+        }
+
+        private int GetRandomCard(List<Card> cards)
+        {
+            Random r = new Random();
+            return r.Next(0, cards.Count);
+        }
+
+        private void Attack(Player player, Player enemy)
+        {
+            if (player.cardsOnTable.Count != 0)
+            {
+                int e = GetRandomCard(enemy.cardsOnTable);
+                int f = GetRandomCard(player.cardsOnTable);
+                if (enemy.cardsOnTable.Count != 0) //jesli gracz ma karty na stole
+                {
+
+                    enemy.cardsOnTable[e].lifePts = enemy.cardsOnTable[e].lifePts - player.cardsOnTable[f].attackPts;
+
+                    //jezeli po odjeciu od punktow ataku od punktow zycia liczba punktow zycia spadla < 0, karta wylatuje ze stolu
+                    if (enemy.cardsOnTable[e].lifePts < 0)
+                    {
+                        enemy.cardsOnTable.RemoveAt(e);
+                    }
+                }
+                else
+                {
+                    enemy.lifePts = enemy.lifePts - player.cardsOnTable[f].attackPts;
+                }
+            }
+        }
+
+        private void UpdateCardsState(List<Card> pl1d, List<Card> pl2d, List<Card> pl1h, List<Card> pl2h, Player pl1, Player pl2)
         {
             Console.WriteLine("Karty w rece Garcza 1:");
             foreach (var card in pl1h)
@@ -241,5 +220,4 @@ namespace hs_projekt_wzsi
             Console.WriteLine("***********************************************************************");
         }
     }
-
 }
