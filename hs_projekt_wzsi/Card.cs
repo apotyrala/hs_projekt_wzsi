@@ -27,5 +27,14 @@
         {
             get; set;
         }
+
+        //public int healPts
+        //{
+        //    get; set;
+        //}
+        //public int damagePts
+        //{
+        //    get; set;
+        //}
     };
 }

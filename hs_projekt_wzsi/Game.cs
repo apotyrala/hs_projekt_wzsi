@@ -12,31 +12,31 @@ namespace hs_projekt_wzsi
 
         public List<Card> Deck1 = new List<Card>()
             {
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
-            new SpecialCard { lifePts = 1, attackPts = 10, manaPts = 5, damagePts =3 },
-            new SpecialCard { lifePts = 1, attackPts = 10, manaPts = 5, healPts=1 },
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 1, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 1, attackPts = 1, manaPts = 1 },
+            new SpecialCard { lifePts = 2, attackPts = 5, manaPts = 2, damagePts =3 },
+            new SpecialCard { lifePts = 3, attackPts = 10, manaPts = 3, healPts=1 },
+            new Card { lifePts = 2, attackPts = 2, manaPts = 4 },
+            new Card { lifePts = 3, attackPts = 3, manaPts = 5 },
+            new Card { lifePts = 4, attackPts = 6, manaPts = 6 },
+            new Card { lifePts = 5, attackPts = 4, manaPts = 1 },
+            new Card { lifePts = 6, attackPts = 3, manaPts = 2 },
+            new Card { lifePts = 7, attackPts = 6, manaPts = 3 },
+            new Card { lifePts = 8, attackPts = 5, manaPts = 4 },
 
              };
 
         public List<Card> Deck2 = new List<Card>()
             {
-            new Card { lifePts = 3, attackPts = 10, manaPts = 5 },
-            new SpecialCard { lifePts = 4, attackPts = 10, manaPts = 5, damagePts =3},
-            new SpecialCard { lifePts = 5, attackPts = 10, manaPts = 5, healPts=1 },
-            new Card { lifePts = 3, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 4, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 5, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 6, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 7, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 8, attackPts = 10, manaPts = 5 },
-            new Card { lifePts = 9, attackPts = 10, manaPts = 5 },
+            new Card { lifePts = 3, attackPts = 1, manaPts = 5 },
+            new SpecialCard { lifePts = 4, attackPts = 2, manaPts = 4, damagePts =3},
+            new SpecialCard { lifePts = 5, attackPts = 10, manaPts = 3, healPts=1 },
+            new Card { lifePts = 3, attackPts = 3, manaPts = 2 },
+            new Card { lifePts = 4, attackPts = 3, manaPts = 1 },
+            new Card { lifePts = 5, attackPts = 4, manaPts = 1 },
+            new Card { lifePts = 6, attackPts = 5, manaPts = 2 },
+            new Card { lifePts = 7, attackPts = 6, manaPts = 3 },
+            new Card { lifePts = 8, attackPts = 2, manaPts = 4 },
+            new Card { lifePts = 9, attackPts = 3, manaPts = 5 },
 
              };
 
@@ -57,8 +57,8 @@ namespace hs_projekt_wzsi
 
         public void GamePlay() // rozgrywka
         {
-            Player player1 = new Player(20);
-            Player player2 = new Player(20);
+            Player player1 = new Player(20,1);
+            Player player2 = new Player(20,1);
 
             //tasowanie kart
             List<Card> shuffledDeck1 = new List<Card>();
@@ -71,12 +71,12 @@ namespace hs_projekt_wzsi
 
             for (int i = 0; i < 4; i++)
             {
-                GetCard(player1, shuffledDeck1, i, 0);
+                GetCard(player1, shuffledDeck1, i);
             }
 
             for (int i = 0; i < 3; i++)
             {
-                GetCard(player2, shuffledDeck2, i, 0);
+                GetCard(player2, shuffledDeck2, i);
             }
 
             UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
@@ -86,14 +86,19 @@ namespace hs_projekt_wzsi
             ThrowCard(player1, 0);
             ThrowCard(player2, 0);
 
+            int k = 1; //zmienna do odejmowanie punktow zycia gracza
+            int mana = 1;//zmienna do dodawania punktow many graczowi
+
             do
             {
-                int k = 1; //zmienna do odejmowanie punktow zycia gracza
 
-                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1), k);
-                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2), k);
+                player1.manaPts = mana;
+                player2.manaPts = mana;
 
-                k = k + 1;
+                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
+                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
+
+                //k = k + 1;
 
                 //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
                 ThrowCard(player1, GetRandomCard(player1.cardsInHand));
@@ -106,6 +111,12 @@ namespace hs_projekt_wzsi
                 Attack(player2, player1);
 
                 UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+
+                if (mana < 10)
+                {
+                    mana = mana + 1;
+                }
+
             } while (player1.lifePts >= 0 && player2.lifePts >= 0);
 
 
@@ -131,13 +142,13 @@ namespace hs_projekt_wzsi
                     card.manaPts.ToString());
         }
 
-        private void GetCard(Player player, List<Card> deck, int nr, int k)
+        private void GetCard(Player player, List<Card> deck, int nr)
         {
             if (deck.Count != 0) //jezeli mozna jeszcze pobrac karty
             {
                 player.cardsInHand.Add(deck[nr]);
                 deck.RemoveAt(nr);
-                player.lifePts = player.lifePts - k;
+                //player.lifePts = player.lifePts - k;
             }
         }
 
@@ -145,8 +156,12 @@ namespace hs_projekt_wzsi
         {
             if (player.cardsInHand.Count != 0) //jesli gracz ma karty w rece
             {
-                player.cardsOnTable.Add(player.cardsInHand[nr]);
-                player.cardsInHand.RemoveAt(nr);
+                if (player.manaPts > 0)
+                {
+                    player.cardsOnTable.Add(player.cardsInHand[nr]);
+                    player.manaPts = player.manaPts - player.cardsInHand[nr].manaPts; //odejmij od punktow many gracza punkty many karty
+                    player.cardsInHand.RemoveAt(nr);
+                }
             }
         }
 
