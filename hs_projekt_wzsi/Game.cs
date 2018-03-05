@@ -40,7 +40,7 @@ namespace hs_projekt_wzsi
 
              };
 
-        public List<Card> ShuffleList<Card>(List<Card> inputList)
+        private List<Card> ShuffleList<Card>(List<Card> inputList)
         {
             List<Card> randomList = new List<Card>();
             int randomIndex = 0;
@@ -55,7 +55,165 @@ namespace hs_projekt_wzsi
             return randomList; //zwroc nowa liste
         }
 
-        public void GamePlay() // rozgrywka
+        public void GamePlayInRandomMode()
+        {
+            //TODO: dodac informacje o tym kto atakuje kogo w jaki sposob
+            Player player1 = new Player(20, 1);
+            Player player2 = new Player(20, 1);
+
+            //tasowanie kart
+            List<Card> shuffledDeck1 = new List<Card>();
+            shuffledDeck1 = ShuffleList(Deck1);
+
+            List<Card> shuffledDeck2 = new List<Card>();
+            shuffledDeck2 = ShuffleList(Deck2);
+
+            //rozdanie kart- gracz 1 zaczyna z czterema kartami, gracz 2 z trzema
+
+            for (int i = 0; i < 4; i++)
+            {
+                GetCard(player1, shuffledDeck1, i);
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                GetCard(player2, shuffledDeck2, i);
+            }
+
+            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+
+
+            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
+            ThrowCard(player1, 0);
+            ThrowCard(player2, 0);
+
+            int k = 1; //zmienna do odejmowanie punktow zycia gracza
+            int mana = 1;//zmienna do dodawania punktow many graczowi
+
+            do
+            {
+                player1.manaPts = mana;
+                player2.manaPts = mana;
+
+                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
+                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
+
+                //k = k + 1;
+
+                //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
+                ThrowCard(player1, GetRandomCard(player1.cardsInHand));
+                ThrowCard(player2, GetRandomCard(player2.cardsInHand));
+
+                //gracz atakuje drugiego gracza
+                AttackRandom(player1, player2);
+                //atak gracza 2
+                AttackRandom(player2, player1);
+
+                UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+
+                if (mana < 10)
+                {
+                    mana = mana + 1;
+                }
+
+            } while (player1.lifePts >= 0 && player2.lifePts >= 0);
+
+            //TODO: do funkcji
+            if (player1.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 1 przegral");
+            }
+            else if (player2.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 2 przegral");
+            }
+            else
+            {
+                Console.WriteLine("Remis");
+            }
+            Console.ReadKey();
+        }
+
+        public void GamePlayInAgressiveMode()
+        {
+            //TODO: do funkcji
+            Player player1 = new Player(20, 1);
+            Player player2 = new Player(20, 1);
+
+            //tasowanie kart
+            List<Card> shuffledDeck1 = new List<Card>();
+            shuffledDeck1 = ShuffleList(Deck1);
+
+            List<Card> shuffledDeck2 = new List<Card>();
+            shuffledDeck2 = ShuffleList(Deck2);
+
+            //rozdanie kart- gracz 1 zaczyna z czterema kartami, gracz 2 z trzema
+
+            for (int i = 0; i < 4; i++)
+            {
+                GetCard(player1, shuffledDeck1, i);
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                GetCard(player2, shuffledDeck2, i);
+            }
+
+            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+
+
+            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
+            ThrowCard(player1, 0);
+            ThrowCard(player2, 0);
+
+            int k = 1; //zmienna do odejmowanie punktow zycia gracza
+            int mana = 1;//zmienna do dodawania punktow many graczowi
+
+            do
+            {
+                player1.manaPts = mana;
+                player2.manaPts = mana;
+
+                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
+                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
+
+                //k = k + 1;
+
+                //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
+                ThrowCard(player1, GetRandomCard(player1.cardsInHand));
+                ThrowCard(player2, GetRandomCard(player2.cardsInHand));
+
+                //gracz atakuje drugiego gracza
+                AttackCharacter(player1, player2);
+                //atak gracza 2
+                AttackCharacter(player2, player1);
+
+                UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+
+                if (mana < 10)
+                {
+                    mana = mana + 1;
+                }
+
+            } while (player1.lifePts >= 0 && player2.lifePts >= 0);
+
+            //TODO: do funkcji
+            if (player1.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 1 przegral");
+            }
+            else if (player2.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 2 przegral");
+            }
+            else
+            {
+                Console.WriteLine("Remis");
+            }
+            Console.ReadKey();
+        }
+
+        public void GamePlayInControlMode() // rozgrywka
         {
             Player player1 = new Player(20,1);
             Player player2 = new Player(20,1);
@@ -106,9 +264,9 @@ namespace hs_projekt_wzsi
 
                 //atak-najpierw ruch gracza 1 (gracz 1 atakuje swoją pierwszą kartą pierwszą kartę przeciwnika (dla ułatwienia)), 
                 //od punktow zycia karty gracza 2 odejmowane sa punkty ataku karty gracza 1
-                Attack(player1, player2);
+                AttackCards(player1, player2);
                 //atak gracza 2
-                Attack(player2, player1);
+                AttackCards(player2, player1);
 
                 UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
 
@@ -171,7 +329,36 @@ namespace hs_projekt_wzsi
             return r.Next(0, cards.Count);
         }
 
-        private void Attack(Player player, Player enemy)
+        private void AttackRandom(Player player, Player enemy)
+        {
+            if (player.cardsOnTable.Count != 0)
+            {
+                int e = GetRandomCard(enemy.cardsOnTable);
+                int f = GetRandomCard(player.cardsOnTable);
+                if (enemy.cardsOnTable.Count != 0) //jesli gracz ma karty na stole
+                {
+                    //losowanie miedzy atakiem w bohatera a atakiem w karty
+                    Random r = new Random();
+                    int select =  r.Next(0, 2);
+
+                    if (select!= 0)
+                        enemy.cardsOnTable[e].lifePts = enemy.cardsOnTable[e].lifePts - player.cardsOnTable[f].attackPts;
+                    else
+                        enemy.lifePts = enemy.lifePts - player.cardsOnTable[f].attackPts;
+                    //jezeli po odjeciu od punktow ataku od punktow zycia liczba punktow zycia spadla < 0, karta wylatuje ze stolu
+                    if (enemy.cardsOnTable[e].lifePts < 0)
+                    {
+                        enemy.cardsOnTable.RemoveAt(e);
+                    }
+                }
+                else
+                {
+                    enemy.lifePts = enemy.lifePts - player.cardsOnTable[f].attackPts;
+                }
+            }
+        }
+
+        private void AttackCards(Player player, Player enemy)
         {
             if (player.cardsOnTable.Count != 0)
             {
@@ -192,6 +379,17 @@ namespace hs_projekt_wzsi
                 {
                     enemy.lifePts = enemy.lifePts - player.cardsOnTable[f].attackPts;
                 }
+            }
+        }
+
+        private void AttackCharacter(Player player, Player enemy)
+        {
+            if (player.cardsOnTable.Count != 0)
+            {
+                //TODO: zrobic ograniczenie
+                int f = GetRandomCard(player.cardsOnTable);
+
+                enemy.lifePts = enemy.lifePts - player.cardsOnTable[f].attackPts;
             }
         }
 

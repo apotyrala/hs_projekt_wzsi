@@ -16,8 +16,10 @@ namespace hs_projekt_wzsi
         [STAThread]
         static void Main()
         {
+            //TODO: menu
             Game game = new Game();
-            game.GamePlay();
+
+            game.GamePlayInControlMode();
 
         }
 
