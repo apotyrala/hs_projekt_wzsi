@@ -57,35 +57,12 @@ namespace hs_projekt_wzsi
 
         public void GamePlayInRandomMode()
         {
-            //TODO: dodac informacje o tym kto atakuje kogo w jaki sposob
+            Console.WriteLine("Gracz losowy:");
             Player player1 = new Player(20, 1);
             Player player2 = new Player(20, 1);
-
-            //tasowanie kart
             List<Card> shuffledDeck1 = new List<Card>();
-            shuffledDeck1 = ShuffleList(Deck1);
-
             List<Card> shuffledDeck2 = new List<Card>();
-            shuffledDeck2 = ShuffleList(Deck2);
-
-            //rozdanie kart- gracz 1 zaczyna z czterema kartami, gracz 2 z trzema
-
-            for (int i = 0; i < 4; i++)
-            {
-                GetCard(player1, shuffledDeck1, i);
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
-                GetCard(player2, shuffledDeck2, i);
-            }
-
-            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
-
-
-            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
-            ThrowCard(player1, 0);
-            ThrowCard(player2, 0);
+            PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
 
             int k = 1; //zmienna do odejmowanie punktow zycia gracza
             int mana = 1;//zmienna do dodawania punktow many graczowi
@@ -117,54 +94,17 @@ namespace hs_projekt_wzsi
                 }
 
             } while (player1.lifePts >= 0 && player2.lifePts >= 0);
-
-            //TODO: do funkcji
-            if (player1.lifePts < 0)
-            {
-                Console.WriteLine("Gracz 1 przegral");
-            }
-            else if (player2.lifePts < 0)
-            {
-                Console.WriteLine("Gracz 2 przegral");
-            }
-            else
-            {
-                Console.WriteLine("Remis");
-            }
-            Console.ReadKey();
+            PrintScore(player1, player2);
         }
 
         public void GamePlayInAgressiveMode()
         {
-            //TODO: do funkcji
+            Console.WriteLine("Gracz agresywny:");
             Player player1 = new Player(20, 1);
             Player player2 = new Player(20, 1);
-
-            //tasowanie kart
             List<Card> shuffledDeck1 = new List<Card>();
-            shuffledDeck1 = ShuffleList(Deck1);
-
             List<Card> shuffledDeck2 = new List<Card>();
-            shuffledDeck2 = ShuffleList(Deck2);
-
-            //rozdanie kart- gracz 1 zaczyna z czterema kartami, gracz 2 z trzema
-
-            for (int i = 0; i < 4; i++)
-            {
-                GetCard(player1, shuffledDeck1, i);
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
-                GetCard(player2, shuffledDeck2, i);
-            }
-
-            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
-
-
-            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
-            ThrowCard(player1, 0);
-            ThrowCard(player2, 0);
+            PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
 
             int k = 1; //zmienna do odejmowanie punktow zycia gracza
             int mana = 1;//zmienna do dodawania punktow many graczowi
@@ -196,53 +136,17 @@ namespace hs_projekt_wzsi
                 }
 
             } while (player1.lifePts >= 0 && player2.lifePts >= 0);
-
-            //TODO: do funkcji
-            if (player1.lifePts < 0)
-            {
-                Console.WriteLine("Gracz 1 przegral");
-            }
-            else if (player2.lifePts < 0)
-            {
-                Console.WriteLine("Gracz 2 przegral");
-            }
-            else
-            {
-                Console.WriteLine("Remis");
-            }
-            Console.ReadKey();
+            PrintScore(player1, player2);
         }
 
         public void GamePlayInControlMode() // rozgrywka
         {
-            Player player1 = new Player(20,1);
-            Player player2 = new Player(20,1);
-
-            //tasowanie kart
+            Console.WriteLine("Gracz kontrolujacy:");
+            Player player1 = new Player(20, 1);
+            Player player2 = new Player(20, 1);
             List<Card> shuffledDeck1 = new List<Card>();
-            shuffledDeck1 = ShuffleList(Deck1);
-
             List<Card> shuffledDeck2 = new List<Card>();
-            shuffledDeck2 = ShuffleList(Deck2);
-
-            //rozdanie kart- gracz 1 zaczyna z czterema kartami, gracz 2 z trzema
-
-            for (int i = 0; i < 4; i++)
-            {
-                GetCard(player1, shuffledDeck1, i);
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
-                GetCard(player2, shuffledDeck2, i);
-            }
-
-            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
-
-
-            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
-            ThrowCard(player1, 0);
-            ThrowCard(player2, 0);
+            PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
 
             int k = 1; //zmienna do odejmowanie punktow zycia gracza
             int mana = 1;//zmienna do dodawania punktow many graczowi
@@ -276,24 +180,34 @@ namespace hs_projekt_wzsi
                 }
 
             } while (player1.lifePts >= 0 && player2.lifePts >= 0);
-
-
-            if (player1.lifePts < 0)
-            {
-                Console.WriteLine("Gracz 1 przegral");
-            }
-            else if (player2.lifePts < 0)
-            {
-                Console.WriteLine("Gracz 2 przegral");
-            }
-            else
-            {
-                Console.WriteLine("Remis");
-            }
-            Console.ReadKey();
-
+            PrintScore(player1, player2);
         }
 
+        private void PrepareGame(Player player1, Player player2, List<Card> shuffledDeck1, List<Card> shuffledDeck2)
+        {
+            //tasowanie kart
+            shuffledDeck1 = ShuffleList(Deck1);
+            shuffledDeck2 = ShuffleList(Deck2);
+
+            //rozdanie kart- gracz 1 zaczyna z czterema kartami, gracz 2 z trzema
+
+            for (int i = 0; i < 4; i++)
+            {
+                GetCard(player1, shuffledDeck1, i);
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                GetCard(player2, shuffledDeck2, i);
+            }
+
+            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+
+
+            //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
+            ThrowCard(player1, 0);
+            ThrowCard(player2, 0);
+        }
         private string DisplayCard(Card card)
         {
             return ("Attack: " + card.attackPts.ToString() + ", Life: " + card.lifePts.ToString() + ", Mana: " +
@@ -393,6 +307,23 @@ namespace hs_projekt_wzsi
             }
         }
 
+        private void PrintScore(Player player1, Player player2)
+        {
+            if (player1.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 1 przegral");
+            }
+            else if (player2.lifePts < 0)
+            {
+                Console.WriteLine("Gracz 2 przegral");
+            }
+            else
+            {
+                Console.WriteLine("Remis");
+            }
+            Console.ReadKey();
+        }
+
         private void UpdateCardsState(List<Card> pl1d, List<Card> pl2d, List<Card> pl1h, List<Card> pl2h, Player pl1, Player pl2)
         {
             Console.WriteLine("Karty w rece Garcza 1:");
@@ -411,6 +342,7 @@ namespace hs_projekt_wzsi
                 Console.WriteLine(DisplayCard(card));
             }
             Console.WriteLine("Punkty zycia Gracza 1: " + pl1.lifePts.ToString());
+            Console.WriteLine("");
 
 
             //gracz 2
@@ -431,6 +363,7 @@ namespace hs_projekt_wzsi
             }
             Console.WriteLine("Punkty zycia Gracza 2: " + pl2.lifePts.ToString());
             Console.WriteLine("***********************************************************************");
+            Console.WriteLine("");
         }
     }
 }
