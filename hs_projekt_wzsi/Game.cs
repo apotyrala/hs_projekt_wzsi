@@ -55,14 +55,15 @@ namespace hs_projekt_wzsi
             return randomList; //zwroc nowa liste
         }
 
-        public void GamePlayInRandomMode()
+        public void GamePlay(int pl1, int pl2)
         {
-            Console.WriteLine("Gracz losowy:");
             Player player1 = new Player(20, 1);
             Player player2 = new Player(20, 1);
             List<Card> shuffledDeck1 = new List<Card>();
             List<Card> shuffledDeck2 = new List<Card>();
             PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
+            player1.mode = pl1;
+            player2.mode = pl2;
 
             int k = 1; //zmienna do odejmowanie punktow zycia gracza
             int mana = 1;//zmienna do dodawania punktow many graczowi
@@ -75,102 +76,42 @@ namespace hs_projekt_wzsi
                 GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
                 GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
 
-                //k = k + 1;
-
-                //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
                 ThrowCard(player1, GetRandomCard(player1.cardsInHand));
                 ThrowCard(player2, GetRandomCard(player2.cardsInHand));
 
                 //gracz atakuje drugiego gracza
-                AttackRandom(player1, player2);
-                //atak gracza 2
-                AttackRandom(player2, player1);
-
-                UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
-
-                if (mana < 10)
+                if (player1.mode == 1) //losowy
                 {
-                    mana = mana + 1;
+                    Console.WriteLine("Gracz 1 - losowy:");
+                    AttackRandom(player1, player2);
+                }
+                else if (player1.mode == 2)
+                {
+                    Console.WriteLine("Gracz 1 - agresywny:");
+                    AttackCards(player1, player2);
+                }
+                else
+                {
+                    Console.WriteLine("Gracz 1 - kontrolujacy:");
+                    AttackCharacter(player1, player2);
                 }
 
-            } while (player1.lifePts >= 0 && player2.lifePts >= 0);
-            PrintScore(player1, player2);
-        }
-
-        public void GamePlayInAgressiveMode()
-        {
-            Console.WriteLine("Gracz agresywny:");
-            Player player1 = new Player(20, 1);
-            Player player2 = new Player(20, 1);
-            List<Card> shuffledDeck1 = new List<Card>();
-            List<Card> shuffledDeck2 = new List<Card>();
-            PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
-
-            int k = 1; //zmienna do odejmowanie punktow zycia gracza
-            int mana = 1;//zmienna do dodawania punktow many graczowi
-
-            do
-            {
-                player1.manaPts = mana;
-                player2.manaPts = mana;
-
-                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
-                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
-
-                //k = k + 1;
-
-                //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
-                ThrowCard(player1, GetRandomCard(player1.cardsInHand));
-                ThrowCard(player2, GetRandomCard(player2.cardsInHand));
-
-                //gracz atakuje drugiego gracza
-                AttackCharacter(player1, player2);
                 //atak gracza 2
-                AttackCharacter(player2, player1);
-
-                UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
-
-                if (mana < 10)
+                if (player2.mode == 1) //losowy
                 {
-                    mana = mana + 1;
+                    Console.WriteLine("Gracz 2 - losowy:");
+                    AttackRandom(player2, player1);
                 }
-
-            } while (player1.lifePts >= 0 && player2.lifePts >= 0);
-            PrintScore(player1, player2);
-        }
-
-        public void GamePlayInControlMode() // rozgrywka
-        {
-            Console.WriteLine("Gracz kontrolujacy:");
-            Player player1 = new Player(20, 1);
-            Player player2 = new Player(20, 1);
-            List<Card> shuffledDeck1 = new List<Card>();
-            List<Card> shuffledDeck2 = new List<Card>();
-            PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
-
-            int k = 1; //zmienna do odejmowanie punktow zycia gracza
-            int mana = 1;//zmienna do dodawania punktow many graczowi
-
-            do
-            {
-
-                player1.manaPts = mana;
-                player2.manaPts = mana;
-
-                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
-                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
-
-                //k = k + 1;
-
-                //druga i kolejne tury- gracze rzucaja karte, nie moga jej uzyc (tylko te z poprzednich tur)
-                ThrowCard(player1, GetRandomCard(player1.cardsInHand));
-                ThrowCard(player2, GetRandomCard(player2.cardsInHand));
-
-                //atak-najpierw ruch gracza 1 (gracz 1 atakuje swoją pierwszą kartą pierwszą kartę przeciwnika (dla ułatwienia)), 
-                //od punktow zycia karty gracza 2 odejmowane sa punkty ataku karty gracza 1
-                AttackCards(player1, player2);
-                //atak gracza 2
-                AttackCards(player2, player1);
+                else if (player2.mode == 2)
+                {
+                    Console.WriteLine("Gracz 2 - agresywny:");
+                    AttackCards(player2, player1);
+                }
+                else
+                {
+                    Console.WriteLine("Gracz 2 - kontrolujacy:");
+                    AttackCharacter(player2, player1);
+                }
 
                 UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
 

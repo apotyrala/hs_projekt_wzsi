@@ -6,6 +6,7 @@ namespace hs_projekt_wzsi
 
         public int lifePts; // punkty zycia gracza
         public int manaPts; // punkty many gracza
+        public int mode;
 
         public List<Card> cardsInHand { get; set; } //karty w dloni gracza
         public List<Card> cardsOnTable { get; set; } //karty gracza na stole

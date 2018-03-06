@@ -18,8 +18,12 @@ namespace hs_projekt_wzsi
         {
             //TODO: menu
             Game game = new Game();
-
-            game.GamePlayInControlMode();
+            int pl1, pl2;
+            Console.WriteLine("Wybierz tryb gracza 1 (1 - losowy, 2 - agresywny, 3 - kontrolujacy)");
+            pl1 = Int32.Parse(Console.ReadKey().KeyChar.ToString());
+            Console.WriteLine("\nWybierz tryb gracza 2 (1 - losowy, 2 - agresywny, 3 - kontrolujacy)");
+            pl2 = Int32.Parse(Console.ReadKey().KeyChar.ToString());
+            game.GamePlay(pl1, 2);
 
         }
 
