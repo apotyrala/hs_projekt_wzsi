@@ -78,7 +78,7 @@ namespace hs_projekt_wzsi
 
                 ThrowCard(player1, GetRandomCard(player1.cardsInHand));
                 ThrowCard(player2, GetRandomCard(player2.cardsInHand));
-
+                 
                 //gracz atakuje drugiego gracza
                 if (player1.mode == 1) //losowy
                 {
