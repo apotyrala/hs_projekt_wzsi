@@ -14,7 +14,7 @@ namespace hs_projekt_wzsi
         public int  playerHealth { get; set; }//zycie gracza
         public int playerMana { get; set; }//mana gracza
         public Player player;
-
+ 
         //zapisanie stanu gry, tj interesuje nas stan Gracza MCTS
         public GameState(List<Card> cardsOnTable, List<Card> cardsInHand, Player p, int ph, int pm)
         {
