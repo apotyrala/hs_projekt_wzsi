@@ -27,7 +27,7 @@ namespace hs_projekt_wzsi
                 if (current.children == null || current.children.Count < p.cardsOnTable.Count)
                 {
                     //ekspansja
-                    return Expansion(current, p.cardsOnTable, p, e);
+                    return Expansion(current, p, e);
                 }
                 else
                 {
@@ -39,22 +39,38 @@ namespace hs_projekt_wzsi
             return current;
         }
 
-        //ekspansja
-        public Node Expansion(Node current, List<Card> cardsOnTable, Player p, Player e)
-        {
+        ////ekspansja
+        //public Node Expansion(Node current, Player p, Player e)
+        //{
+        //    //wykonaj ruch
+        //    AttackRandomMCTS(p, e);
+        //    //ruch przeciwnika
+        //    //ruch przeciwnika
+        //    if (e.mode == 1) //losowy
+        //    {
+        //        Console.WriteLine("Gracz losowy:");
+        //        AttackRandom(e, p);
+        //    }
+        //    else if (e.mode == 2)
+        //    {
+        //        Console.WriteLine("Gracz agresywny:");
+        //        AttackCards(e, p);
+        //    }
+        //    else if (e.mode == 3)
+        //    {
+        //        Console.WriteLine("Gracz kontrolujacy:");
+        //        AttackCharacter(e, p);
+        //    }
 
-            //wykonaj ruch
-            AttackRandomMCTS(p, e);
-            //zapisz stan gry
-            GameState gs = new GameState(p.cardsOnTable, p.cardsInHand, p, p.lifePts, p.manaPts);
-            //utworz wezel ze stanem gry (tablica dzieci to cardsOnTable)
-            Node node = new Node(current, cardsOnTable, gs);
-            //
-            current = node;
-            return node;
+        //    //zapisz stan gry
+        //    GameState gs = new GameState(p.cardsOnTable, p.cardsInHand, e.cardsOnTable, e.cardsInHand, p.lifePts, p.manaPts, e.lifePts, e.manaPts);
+        //    //utworz wezel ze stanem gry (tablica dzieci to cardsOnTable)
+        //    Node node = new Node(current, gs);
 
-
-        }
+        //    //zwrotka nowego obecnego wezla
+        //    current = node;
+        //    return node;
+        //}
 
         public Node bestChildUCB(Node current)
         {
@@ -76,25 +92,7 @@ namespace hs_projekt_wzsi
             return bestChild;
         }
 
-        public int Rollout(Node current, Player player, Player enemy)
-        {
-            do
-            {
-                AttackRandomMCTS(player, enemy);
 
-            } while (player.lifePts >= 0);
-
-            if (player.lifePts < enemy.lifePts)
-            {
-                return -1;
-            }
-            else if (player.lifePts > enemy.lifePts)
-            {
-                return 1;
-            }
-
-            else return 0;
-        }
 
         public void Update(Node current, int value)
         {
@@ -107,19 +105,6 @@ namespace hs_projekt_wzsi
             }
             while (current != null);
 
-        }
-
-        public Node initMCTS(Player player, Player enemy)
-        {
-            //wykonaj ruch
-            AttackRandomMCTS(player, enemy);
-            //zapisz stan gry
-            GameState gs = new GameState(player.cardsOnTable, player.cardsInHand, player, player.lifePts, player.manaPts);
-
-            //utworz korzen ze stanem gry (tablica dzieci to cardsOnTable)
-            Node root = new Node(null, player.cardsOnTable, gs);
-
-            return root;
         }
 
         //funkcja do randomowego ruchu gracza MCTS 

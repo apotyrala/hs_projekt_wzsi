@@ -9,7 +9,6 @@ namespace hs_projekt_wzsi
 
     public class Game
     {
-        MCTS mcts = new MCTS();
 
         public List<Card> Deck1 = new List<Card>()
             {
@@ -69,9 +68,14 @@ namespace hs_projekt_wzsi
             int k = 1; //zmienna do odejmowanie punktow zycia gracza
             int mana = 1;//zmienna do dodawania punktow many graczowi
 
-            if (player1.mode == 4 || player2.mode == 4)
+            //jezeli ktorys z graczy jest MCTS, przeskakujemy do rozgrywki MCTS funkcję nizej
+            if (player1.mode == 4 )
             {
                 GamePlayMCTS(pl1, pl2, player1, player2, shuffledDeck1, shuffledDeck2);
+            }
+            else if (player2.mode == 4)
+            {
+                GamePlayMCTS(pl2, pl1, player2, player1, shuffledDeck1, shuffledDeck2);
             }
             else
             {
@@ -135,100 +139,203 @@ namespace hs_projekt_wzsi
             PrintScore(player1, player2);
         }
 
-        public void GamePlayMCTS(int pl1, int pl2, Player player1, Player player2, List<Card> shuffledDeck1, List <Card> shuffledDeck2)
+        //player- gracz mcts, enemy- nie mcts
+        public void GamePlayMCTS(int pl1, int pl2, Player player, Player enemy, List<Card> shuffledDeck1, List <Card> shuffledDeck2)
+        {
+
+
+                int mana = 1; //zmienna do dodawania punktow many graczowi
+                int value = 0;
+
+                player.manaPts = mana;
+                enemy.manaPts = mana;
+
+                //gracz mcts atakuje przeciwnika
+                Console.WriteLine("Gracz mcts:");
+                AttackRandom(player, enemy);
+
+
+                //przeciwnik atakuje drugiego mcts
+                if (enemy.mode == 1) //losowy
+                {
+                    Console.WriteLine("Gracz losowy:");
+                    AttackRandom(enemy, player);
+                }
+                else if (enemy.mode == 2)
+                {
+                    Console.WriteLine("Gracz agresywny:");
+                    AttackCards(enemy, player);
+                }
+                else if (enemy.mode == 3)
+                {
+                    Console.WriteLine("Gracz kontrolujacy:");
+                    AttackCharacter(enemy, player);
+                }
+
+                //zapisz stan gry
+                GameState gs = new GameState(player.cardsOnTable, player.cardsInHand, enemy.cardsOnTable, enemy.cardsInHand, player.lifePts, player.manaPts, enemy.lifePts, enemy.manaPts);
+
+                //zapisz do korzenia
+                Node root = new Node(null, gs);
+
+                //obecny wezel to root
+                Node current = root;
+
+                //wezel pomocniczy
+                Node helper = current;
+
+                helper = Selection(current, player, enemy, mana);
+                current = helper;
+                value = Rollout(current, player, enemy, mana);
+                Update(current, value);
+            
+        }
+        
+        #region mcts functions
+
+        //selekcja 
+        public Node Selection(Node current, Player p, Player e, int m)
+        {
+
+            if (p.cardsOnTable.Count != 0)
+            {
+                //jesli ilosc wezlow potomnych obecnego wezla < liczby kart na stole
+
+                if (current.children == null || current.children.Count < p.cardsOnTable.Count)
+                {
+                    //ekspansja
+                    return Expansion(current, p, e, m);
+                }
+                else
+                {
+                    //wybor najlepszego dziecka
+                    current = bestChildUCB(current);
+                }
+
+            }
+            return current;
+        }
+
+
+        //ekspansja
+        public Node Expansion(Node current, Player p, Player e, int mana)
         {
             //wykonaj ruch
-            mcts.AttackRandomMCTS(player1, player2);
+            AttackRandom(p,e);
+            //ruch przeciwnika
+            if (e.mode == 1) //losowy
+            {
+                Console.WriteLine("Gracz losowy:");
+                AttackRandom(e, p);
+            }
+            else if (e.mode == 2)
+            {
+                Console.WriteLine("Gracz agresywny:");
+                AttackCards(e, p);
+            }
+            else if (e.mode == 3)
+            {
+                Console.WriteLine("Gracz kontrolujacy:");
+                AttackCharacter(e, p);
+            }
+
+
+            //dodaj pkt many
+            if (mana < 10)
+            {
+                mana = mana + 1;
+            }
+
             //zapisz stan gry
-            GameState gs = new GameState(player1.cardsOnTable, player1.cardsInHand, player1, player1.lifePts, player1.manaPts);
+            GameState gs = new GameState(p.cardsOnTable, p.cardsInHand, e.cardsOnTable, e.cardsInHand, p.lifePts, p.manaPts, e.lifePts, e.manaPts);
+            //utworz wezel ze stanem gry (tablica dzieci to cardsOnTable)
+            Node node = new Node(current, gs);
 
-            //utworz korzen ze stanem gry (tablica dzieci to cardsOnTable)
-            Node root = new Node(null, player1.cardsOnTable, gs);
-            //
-            Node current = new Node(null, player1.cardsOnTable, gs);
-           // for (int i = 0; i < 100; i++)
-            
-                //PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
-                //player1.mode = pl1;
-                //player2.mode = pl2;
-
-                //int k = 1; //zmienna do odejmowanie punktow zycia gracza
-                int mana = 1;//zmienna do dodawania punktow many graczowi
-
-                do
-                {
-                    player1.manaPts = mana;
-                    player2.manaPts = mana;
-
-                    GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
-                    GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
-
-                    ThrowCard(player1, GetRandomCard(player1.cardsInHand));
-                    ThrowCard(player2, GetRandomCard(player2.cardsInHand));
-
-                    //gracz atakuje drugiego gracza
-                    if (player1.mode == 1) //losowy
-                    {
-                        Console.WriteLine("Gracz 1 - losowy:");
-                        AttackRandom(player1, player2);
-                    }
-                    else if (player1.mode == 2)
-                    {
-                        Console.WriteLine("Gracz 1 - agresywny:");
-                        AttackCards(player1, player2);
-                    }
-                    else if (player1.mode == 3)
-                    {
-                        Console.WriteLine("Gracz 1 - kontrolujacy:");
-                        AttackCharacter(player1, player2);
-                    }
-                    else if (player1.mode == 4)
-                    {
-                        Console.WriteLine("Gracz 1 - MCTS:");
-                        root = current;
-                        current=mcts.AttackMCTS(player1, player2, current);
-                       
-
-                    }
-
-                    //atak gracza 2
-                    if (player2.mode == 1) //losowy
-                    {
-                        Console.WriteLine("Gracz 2 - losowy:");
-                        AttackRandom(player2, player1);
-                    }
-                    else if (player2.mode == 2)
-                    {
-                        Console.WriteLine("Gracz 2 - agresywny:");
-                        AttackCards(player2, player1);
-                    }
-                    else if (player2.mode == 3)
-                    {
-                        Console.WriteLine("Gracz 2 - kontrolujacy:");
-                        AttackCharacter(player2, player1);
-                    }
-                    else if (player2.mode == 4)
-                    {
-                        Console.WriteLine("Gracz 2 - MCTS:");
-                        root = current;
-                        current = mcts.Selection(current, player2.cardsOnTable, player2, player1);
-
-                    }
-
-
-                    UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
-
-                    if (mana < 10)
-                    {
-                        mana = mana + 1;
-                    }
-
-                } while (player1.lifePts >= 0 && player2.lifePts >= 0);
-                PrintScore(player1, player2);
-
-                int value = mcts.Rollout(current, player1, player2);
-                mcts.Update(current, value);
+            //zwrotka nowego obecnego wezla
+            current = node;
+            return node;
         }
+
+        //wybor najlepszego dziecka
+        public Node bestChildUCB(Node current)
+        {
+            double C = 1.44;
+            Node bestChild = null;
+            double best = double.NegativeInfinity;
+
+            foreach (Node child in current.children)
+            {
+                double UCB1 = ((double)child.value / (double)child.visits) + C * Math.Sqrt((2.0 * Math.Log((double)current.visits)) / (double)child.visits);
+
+                if (UCB1 > best)
+                {
+                    bestChild = child;
+                    best = UCB1;
+                }
+            }
+
+            return bestChild;
+        }
+
+        public int Rollout(Node current, Player player, Player enemy, int mana)
+        {
+            do
+            {
+                //ruch mcts
+                AttackRandom(player, enemy);
+
+                //ruch przeciwnika
+                if (enemy.mode == 1) //losowy
+                {
+                    Console.WriteLine("Gracz losowy:");
+                    AttackRandom(enemy, player);
+                }
+                else if (enemy.mode == 2)
+                {
+                    Console.WriteLine("Gracz agresywny:");
+                    AttackCards(enemy, player);
+                }
+                else if (enemy.mode == 3)
+                {
+                    Console.WriteLine("Gracz kontrolujacy:");
+                    AttackCharacter(enemy, player);
+                }
+
+                //dodaj pkt many
+                if (mana < 10)
+                {
+                    mana = mana + 1;
+                }
+
+            } while (player.lifePts >= 0 && enemy.lifePts>0);
+
+            if (player.lifePts < enemy.lifePts)
+            {
+                return -1;
+            }
+            else if (player.lifePts > enemy.lifePts)
+            {
+                return 1;
+            }
+
+            else return 0;
+        }
+
+        //update stanu wezlow
+        public void Update(Node current, int value)
+        {
+
+            do
+            {
+                current.visits++;
+                current.value += value;
+                current = current.parent;
+            }
+            while (current != null);
+
+        }
+
+        #endregion 
 
         private void PrepareGame(Player player1, Player player2, List<Card> shuffledDeck1, List<Card> shuffledDeck2)
         {

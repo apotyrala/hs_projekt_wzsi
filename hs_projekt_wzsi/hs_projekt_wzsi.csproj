@@ -67,13 +67,11 @@
     <Compile Include="Charm.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameState.cs" />
-    <Compile Include="MCTS.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpecialCard.cs" />
-    <Compile Include="Tree.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -22,11 +22,11 @@ namespace hs_projekt_wzsi
             set;
         }
 
-        public GameState gameState;//stan gry
+        public GameState gameState;//stan gry w danym węźle
         public List<Node> children { get; set; } //lista dzieci obecnego wezla
 
-        //konstruktor
-        public Node (Node p, List<Card> cardsOnTb, GameState gs)
+        //konstruktor, wezel przechowuje informacje o swoim rodzicu i stanie gry
+        public Node (Node p, GameState gs)
         {
             parent = p;
             gameState = gs;
