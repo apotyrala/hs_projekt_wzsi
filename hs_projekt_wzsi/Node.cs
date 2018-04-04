@@ -30,12 +30,13 @@ namespace hs_projekt_wzsi
         {
             parent = p;
             gameState = gs;
+            children = new List<Node>();
         }
 
         //dodawanie wezla potomnego
         public void addChild(Node c)
         {
-            this.children.Add(c);
+            children.Add(c);
         }
     }
 
