@@ -36,19 +36,19 @@ namespace hs_projekt_wzsi
         }
 
         //kopia stanu gry- gdy wezel zostanie wybrany 
-        public void copyState(Player mcts, Player enemy)
+        public void copyState(Player mcts, Player enemy, GameState gs)
         {
             //stan gracza MCTS
-            mcts.cardsOnTable=cardsOnTableMCTS;
-            mcts.cardsInHand=cardsInHandMCTS;
-            mcts.lifePts=mctsHealth;
-            mcts.manaPts=mctsMana;
+            mcts.cardsOnTable= gs.cardsOnTableMCTS;
+            mcts.cardsInHand= gs.cardsInHandMCTS;
+            mcts.lifePts= gs.mctsHealth;
+            mcts.manaPts= gs.mctsMana;
 
             //stan przeciwnika
-            enemy.cardsOnTable=cardsOnTable;
-            enemy.cardsInHand=cardsInHand;
-            enemy.lifePts=enemyHealth;
-            enemy.manaPts=enemyMana;
+            enemy.cardsOnTable= gs.cardsOnTable;
+            enemy.cardsInHand= gs.cardsInHand;
+            enemy.lifePts= gs.enemyHealth;
+            enemy.manaPts= gs.enemyMana;
 
 
         }

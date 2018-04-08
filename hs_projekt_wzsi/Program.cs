@@ -23,7 +23,7 @@ namespace hs_projekt_wzsi
             pl1 = Int32.Parse(Console.ReadKey().KeyChar.ToString());
             Console.WriteLine("\nWybierz tryb gracza 2 (1 - losowy, 2 - agresywny, 3 - kontrolujacy, 4-MCTS)");
             pl2 = Int32.Parse(Console.ReadKey().KeyChar.ToString());
-            game.GamePlay(pl1, pl2);
+            game.chooseGameMode(pl1, pl2);
 
         }
 
