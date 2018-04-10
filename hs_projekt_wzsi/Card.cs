@@ -1,4 +1,6 @@
-﻿namespace hs_projekt_wzsi
+﻿using System.Collections.Generic;
+
+namespace hs_projekt_wzsi
 {
     public class Card {
 
@@ -27,6 +29,8 @@
         {
             get; set;
         }
+
+
 
         //public int healPts
         //{

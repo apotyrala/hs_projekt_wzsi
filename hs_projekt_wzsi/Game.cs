@@ -3,12 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace hs_projekt_wzsi
 {
 
     public class Game
     {
+        List<Card> shuffledDeck1 = new List<Card>();
+        List<Card> shuffledDeck2 = new List<Card>();
 
         public List<Card> Deck1 = new List<Card>()
             {
@@ -62,8 +65,6 @@ namespace hs_projekt_wzsi
         {
             Player player1 = new Player(20, 1);
             Player player2 = new Player(20, 1);
-            List<Card> shuffledDeck1 = new List<Card>();
-            List<Card> shuffledDeck2 = new List<Card>();
             player1.mode = pl1;
             player2.mode = pl2;
 
@@ -86,20 +87,30 @@ namespace hs_projekt_wzsi
         {
 
             int mana = 1;//zmienna do dodawania punktow many graczowi
-
+             //tasowanie kart
+            shuffledDeck1 = ShuffleList(Deck1);
+            shuffledDeck2 = ShuffleList(Deck2);
 
             player1.manaPts = mana;
             player2.manaPts = mana;
 
+            Console.WriteLine(shuffledDeck1.Count);
+            Console.WriteLine(shuffledDeck2.Count);
             PrepareGame(player1, player2, shuffledDeck1, shuffledDeck2);
+            Console.WriteLine(shuffledDeck1.Count);
+            Console.WriteLine(shuffledDeck2.Count);
+
             do
             {
-                GetCard(player1, shuffledDeck1, GetRandomCard(shuffledDeck1));
-                GetCard(player2, shuffledDeck2, GetRandomCard(shuffledDeck2));
+                GetCard(player1, shuffledDeck1, 0);
+                GetCard(player2, shuffledDeck2, 0);
 
                 ThrowCard(player1, GetRandomCard(player1.cardsInHand));
                 ThrowCard(player2, GetRandomCard(player2.cardsInHand));
 
+                UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+                Console.WriteLine(shuffledDeck1.Count);
+                Console.WriteLine(shuffledDeck2.Count);
                 //gracz atakuje drugiego gracza
                 if (player1.mode == 1) //losowy
                 {
@@ -135,9 +146,6 @@ namespace hs_projekt_wzsi
                     AttackCharacter(player2, player1);
                 }
 
-
-                UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
-
                 //dodaj pkt many graczom
                 if (player1.manaPts < 10)
                 {
@@ -147,6 +155,7 @@ namespace hs_projekt_wzsi
                 {
                     player2.manaPts = player2.manaPts + 1;
                 }
+
             } while (player1.lifePts >= 0 && player2.lifePts >= 0);
             PrintScore(player1, player2);
 
@@ -159,6 +168,7 @@ namespace hs_projekt_wzsi
      
             int value = 0;
 
+
             GameState gs = new GameState(player.cardsOnTable, player.cardsInHand, enemy.cardsOnTable, enemy.cardsInHand, player.lifePts, player.manaPts, enemy.lifePts, enemy.manaPts);
 
             //zapisz do korzenia
@@ -168,6 +178,9 @@ namespace hs_projekt_wzsi
             do
             {
                 //kopia stanu gry z roota
+                //tasowanie kart
+                shuffledDeck1 = ShuffleList(Deck1);
+                shuffledDeck2 = ShuffleList(Deck2);
                 root.gameState.copyState(player, enemy,root.gameState);
                 PrepareGame(player, enemy, shuffledDeck1, shuffledDeck2);
                 Console.WriteLine("\nRoot value/visits: {0}/{1}", root.value, root.visits);
@@ -194,7 +207,7 @@ namespace hs_projekt_wzsi
                 Update(current, value);
                 x++;
 
-            } while (x < 150);
+            } while (x < 500);
 
 
         }
@@ -216,15 +229,13 @@ namespace hs_projekt_wzsi
                 }
                 else //dopoki wezel ma dzieci i jest w pelni rozwiniety- wykonuj selekcje
                 {
-                do
-                {
+
                     //wybor najlepszego dziecka
                     helper = bestChildUCB(current);
                     current = helper;
                     Console.WriteLine("Node value/visits: {0}/{1}", current.value, current.visits);
                     return current;
 
-                } while (current.children.Count != 0 && current.children.Count == p.cardsOnTable.Count + 1);
                 }
             
  
@@ -326,9 +337,6 @@ namespace hs_projekt_wzsi
                 AttackRandom(player, enemy);
 
                 //ruch przeciwnika
-                AttackRandom(enemy, player);
-
-                //ruch przeciwnika
                 if (enemy.mode == 1) //losowy
                 {
                     AttackRandom(enemy, player);
@@ -366,7 +374,6 @@ namespace hs_projekt_wzsi
             }
             else
             {
-                current.parent.value = int.MinValue;
                 return -1;
             }
 
@@ -389,9 +396,6 @@ namespace hs_projekt_wzsi
 
         private void PrepareGame(Player player1, Player player2, List<Card> shuffledDeck1, List<Card> shuffledDeck2)
         {
-            //tasowanie kart
-            shuffledDeck1 = ShuffleList(Deck1);
-            shuffledDeck2 = ShuffleList(Deck2);
 
             //rozdanie kart- gracz 1 zaczyna z czterema kartami, gracz 2 z trzema
 
