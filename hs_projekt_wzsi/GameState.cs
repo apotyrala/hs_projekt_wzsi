@@ -17,10 +17,13 @@ namespace hs_projekt_wzsi
         public int mctsMana { get; set; }//mana gracza mcts
         public int enemyHealth { get; set; }//zycie gracza
         public int enemyMana { get; set; }//mana gracza
- 
+
+
+        public List<Card> sd1 { get; set; } //karty gracza w decku 1
+        public List<Card> sd2 { get; set; } //karty gracza w decku 2
 
         //zapisanie stanu gry
-        public GameState(List<Card> mctsTable, List<Card> mctsHand, List<Card> enemyTable, List<Card> enemyHand, int ph, int pm, int ph1, int pm1)
+        public GameState(List<Card> mctsTable, List<Card> mctsHand, List<Card> enemyTable, List<Card> enemyHand, int ph, int pm, int ph1, int pm1, List<Card> shuffled1, List<Card> shuffled2)
         {
             //stan gracza MCTS
             cardsOnTableMCTS = mctsTable;
@@ -33,10 +36,13 @@ namespace hs_projekt_wzsi
             cardsInHand = enemyHand;
             enemyHealth = ph1;
             enemyMana = pm1;
+
+            sd1 = shuffled1;
+            sd2 = shuffled2;
         }
 
         //kopia stanu gry- gdy wezel zostanie wybrany 
-        public void copyState(Player mcts, Player enemy, GameState gs)
+        public void copyState(Player mcts, Player enemy, GameState gs, List<Card> shuffled1, List<Card> shuffled2)
         {
             //stan gracza MCTS
             mcts.cardsOnTable= gs.cardsOnTableMCTS;
@@ -49,6 +55,9 @@ namespace hs_projekt_wzsi
             enemy.cardsInHand= gs.cardsInHand;
             enemy.lifePts= gs.enemyHealth;
             enemy.manaPts= gs.enemyMana;
+
+            shuffled1 = gs.sd1;
+            shuffled2 = gs.sd2;
 
 
         }

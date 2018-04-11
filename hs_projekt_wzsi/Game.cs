@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Linq;
+using System.Diagnostics;
 
 namespace hs_projekt_wzsi
 {
@@ -26,6 +27,16 @@ namespace hs_projekt_wzsi
             new Card { lifePts = 7, attackPts = 4, manaPts = 3 },
             new Card { lifePts = 8, attackPts = 1, manaPts = 4 },
             new Card { lifePts = 1, attackPts = 1, manaPts = 1 },
+            new Card { lifePts = 1, attackPts = 1, manaPts = 1 },
+            new SpecialCard { lifePts = 2, attackPts = 2, manaPts = 2, damagePts =3 },
+            new SpecialCard { lifePts = 3, attackPts = 3, manaPts = 3, healPts=1 },
+            new Card { lifePts = 2, attackPts = 2, manaPts = 4 },
+            new Card { lifePts = 3, attackPts = 3, manaPts = 5 },
+            new Card { lifePts = 4, attackPts = 4, manaPts = 6 },
+            new Card { lifePts = 5, attackPts = 4, manaPts = 1 },
+            new Card { lifePts = 6, attackPts = 3, manaPts = 2 },
+            new Card { lifePts = 7, attackPts = 4, manaPts = 3 },
+            new Card { lifePts = 8, attackPts = 1, manaPts = 4 },
 
              };
 
@@ -42,6 +53,17 @@ namespace hs_projekt_wzsi
             new Card { lifePts = 7, attackPts = 4, manaPts = 3 },
             new Card { lifePts = 8, attackPts = 1, manaPts = 4 },
             new Card { lifePts = 1, attackPts = 1, manaPts = 1 },
+            new Card { lifePts = 1, attackPts = 1, manaPts = 1 },
+            new SpecialCard { lifePts = 2, attackPts = 2, manaPts = 2, damagePts =3 },
+            new SpecialCard { lifePts = 3, attackPts = 3, manaPts = 3, healPts=1 },
+            new Card { lifePts = 2, attackPts = 2, manaPts = 4 },
+            new Card { lifePts = 3, attackPts = 3, manaPts = 5 },
+            new Card { lifePts = 4, attackPts = 4, manaPts = 6 },
+            new Card { lifePts = 5, attackPts = 4, manaPts = 1 },
+            new Card { lifePts = 6, attackPts = 3, manaPts = 2 },
+            new Card { lifePts = 7, attackPts = 4, manaPts = 3 },
+            new Card { lifePts = 8, attackPts = 1, manaPts = 4 },
+
 
              };
 
@@ -165,24 +187,24 @@ namespace hs_projekt_wzsi
         //player- gracz mcts, enemy- nie mcts
         public void GamePlayMCTS(int pl1, int pl2, Player player, Player enemy, List<Card> shuffledDeck1, List <Card> shuffledDeck2)
         {
-     
+
+            List<Card> helper1 = new List<Card>();
+            List<Card> helper2 = new List<Card>();
             int value = 0;
 
-
-            GameState gs = new GameState(player.cardsOnTable, player.cardsInHand, enemy.cardsOnTable, enemy.cardsInHand, player.lifePts, player.manaPts, enemy.lifePts, enemy.manaPts);
+            int x = 0;
+            //tasowanie kart
+            shuffledDeck1 = ShuffleList(Deck1);
+            shuffledDeck2 = ShuffleList(Deck2);
+            PrepareGame(player, enemy, shuffledDeck1, shuffledDeck2);
+            GameState gs = new GameState(player.cardsOnTable, player.cardsInHand, enemy.cardsOnTable, enemy.cardsInHand, player.lifePts, player.manaPts, enemy.lifePts, enemy.manaPts, shuffledDeck1, shuffledDeck2);
 
             //zapisz do korzenia
-            Node root = new Node(null, gs); 
-            int x = 0;
-
+            Node root = new Node(null, gs);
             do
             {
                 //kopia stanu gry z roota
-                //tasowanie kart
-                shuffledDeck1 = ShuffleList(Deck1);
-                shuffledDeck2 = ShuffleList(Deck2);
-                root.gameState.copyState(player, enemy,root.gameState);
-                PrepareGame(player, enemy, shuffledDeck1, shuffledDeck2);
+                root.gameState.copyState(player, enemy, gs, shuffledDeck1, shuffledDeck2);
                 Console.WriteLine("\nRoot value/visits: {0}/{1}", root.value, root.visits);
                 Console.WriteLine("\n{0}. iteration", x);
 
@@ -192,9 +214,9 @@ namespace hs_projekt_wzsi
                 //wezel pomocniczy
                 Node helper = current;
 
-                helper = Selection(current, player, enemy, shuffledDeck1, shuffledDeck2);
+                helper= Selection(current, player, enemy, shuffledDeck1, shuffledDeck2);
                 current = helper;
-                current.gameState.copyState(player, enemy, current.gameState);
+                //current.gameState.copyState(player, enemy, current.gameState);
                 Console.WriteLine("Node value/visits: {0}/{1}, Node idx: {2}", current.value, current.visits, current.parent.children.IndexOf(current));
 
                 //dopoki nie osiagnelismy konca drzewa wykonaj rollout
@@ -221,81 +243,170 @@ namespace hs_projekt_wzsi
                 Node helper = null;
                 //jesli ilosc wezlow potomnych obecnego wezla < liczby kart na stole + 1 (ten plus 1 bo w danej turze gracz może wybrać atak
                 //jedną z posiadanych obecnie kart na stole LUB jeden atak bezposrednio w przeciwnika)
-                if (current.children == null || current.children.Count < p.cardsOnTable.Count + 1)
+                if (current.children.Count == 0)
                 {
-                        //ekspansja
-                    return Expansion(current, p, e, shuffledDeck1, shuffledDeck2);
+                    //zapisz aktualny stan gry
+                    GameState gs_curr = new GameState(p.cardsOnTable, p.cardsInHand, e.cardsOnTable, e.cardsInHand, p.lifePts, p.manaPts, e.lifePts, e.manaPts, shuffledDeck1, shuffledDeck2);
+                    //ekspansja
+                    return Expansion(current, p, e, shuffledDeck1, shuffledDeck2, gs_curr);
+
 
                 }
+
                 else //dopoki wezel ma dzieci i jest w pelni rozwiniety- wykonuj selekcje
                 {
+                    Console.WriteLine("Node children: {0}", current.children.Count);
 
-                    //wybor najlepszego dziecka
-                    helper = bestChildUCB(current);
-                    current = helper;
-                    Console.WriteLine("Node value/visits: {0}/{1}", current.value, current.visits);
-                    return current;
+                    while (current.children.Count != 0)
+                    {
+                        //jesli ktores dziecko jest nieodwiedzone
+                        foreach (var child in current.children)
+                        {
+                            if (child.visits == 0)
+                            {
+                                return child;
+                            }
 
+                        }
+
+                        //wybor najlepszego dziecka
+                        helper = bestChildUCB(current);
+                        current = helper;
+                        Console.WriteLine("Node value/visits: {0}/{1}", current.value, current.visits);
+
+                    }
+
+                    return Expansion(current, p, e, shuffledDeck1, shuffledDeck2, current.gameState);
                 }
-            
- 
+          
        
         }
 
-
-        //ekspansja
-        public Node Expansion(Node current, Player p, Player e, List<Card> shuffledDeck1, List<Card> shuffledDeck2)
+        public void enemyAttack(Player e, Player p)
         {
+            if (e.mode == 1)
+            {
+                AttackRandom(e, p);
+            }
+            else if (e.mode == 2)
+            {
+                AttackCards(e, p);
+            }
+            else if (e.mode == 3)
+            {
+                AttackCharacter(e, p);
+            }
+        }
 
-                GetCard(p, shuffledDeck1, GetRandomCard(shuffledDeck1));
-                GetCard(e, shuffledDeck2, GetRandomCard(shuffledDeck2));
+        public void addMana(Player e, Player p)
+        {
+            if (p.manaPts < 10)
+            {
+                p.manaPts = p.manaPts + 1;
+            }
+            if (e.manaPts < 10)
+            {
+                e.manaPts = e.manaPts + 1;
+            }
+        }
+        //ekspansja
+        public Node Expansion(Node current, Player p, Player e, List<Card> shuffledDeck1, List<Card> shuffledDeck2, GameState gs_curr)
+        {
+            GetCard(p, shuffledDeck1, GetRandomCard(shuffledDeck1));
+            GetCard(e, shuffledDeck2, GetRandomCard(shuffledDeck2));
 
-                ThrowCard(p, GetRandomCard(p.cardsInHand));
-                ThrowCard(e, GetRandomCard(e.cardsInHand));
+            ThrowCard(p, GetRandomCard(p.cardsInHand));
+            ThrowCard(e, GetRandomCard(e.cardsInHand));
 
-                //wykonaj ruch
-                AttackRandom(p, e);
+            //2. najpierw wszystkimi kartami gracza atakujemy wszystkie karty przeciwnika
+            if (p.cardsOnTable.Count > 0 && p.lifePts>=0 && e.lifePts>=0)
+            {
+                if (e.cardsOnTable.Count > 0)
+                {
+
+                    for (int i = 0; i < p.cardsOnTable.Count; i++)
+                    {
+                        for (int j = 0; j < e.cardsOnTable.Count; j++)
+                        {
+
+                            //ruch gracza
+                            e.cardsOnTable[j].lifePts = e.cardsOnTable[j].lifePts - p.cardsOnTable[i].attackPts;
+                            if (e.cardsOnTable[j].lifePts < 0)
+                            {
+                                e.cardsOnTable.RemoveAt(j);
+                            }
+                            //ruch przeciwnika
+                            enemyAttack(e, p);
+                            //dodaj pkt many graczom
+                            addMana(e, p);
+                            //zapisz stan gry
+                            GameState gs_new = new GameState(p.cardsOnTable, p.cardsInHand, e.cardsOnTable, e.cardsInHand, p.lifePts, p.manaPts, e.lifePts, e.manaPts, shuffledDeck1, shuffledDeck2);
+                            //utworz wezel ze stanem gry 
+                            Node node = new Node(current, gs_new);
+
+                            //dodaj nowy wezel do listy dzieci poprzedniego wezla
+                            current.addChild(node);
+                            //wroc do poprzedniego stanu gry
+                            current.gameState.copyState(p, e, gs_curr,shuffledDeck1, shuffledDeck2);
+
+                        }
+
+                    }
+                }
+               
+                //3. potem wszystkimi kartami gracza atakujemy przeciwnika
+                for(int k = 0; k < p.cardsOnTable.Count; k++)
+                {
+
+                    //ruch gracza
+                    e.lifePts = e.lifePts - p.cardsOnTable[k].attackPts;
+
+                    //ruch przeciwnika
+                    enemyAttack(e, p);
+                    //dodaj pkt many graczom
+                    addMana(e, p);
+                    //zapisz stan gry
+                    GameState gs_new1 = new GameState(p.cardsOnTable, p.cardsInHand, e.cardsOnTable, e.cardsInHand, p.lifePts, p.manaPts, e.lifePts, e.manaPts, shuffledDeck1,shuffledDeck2);
+                    //utworz wezel ze stanem gry 
+                    Node node1 = new Node(current, gs_new1);
+
+                    //dodaj nowy wezel do listy dzieci poprzedniego wezla
+                    current.addChild(node1);
+                    //wroc do poprzedniego stanu gry
+                    current.gameState.copyState(p, e, gs_curr, shuffledDeck1, shuffledDeck2);
+                }
+            }
+
+            //4. na koncu-gracz bezposrednio atakuje przeciwnika (zadaje 1 obrazenie)- w ten sposob rozwinelismy caly lisc o mozliwe stany gry
+           if( p.lifePts >= 0 && e.lifePts >= 0)
+            {
+
+                //ruch gracza
+                e.lifePts = e.lifePts - 1;
                 //ruch przeciwnika
-                if (e.mode == 1) //losowy
-                {
-                    AttackRandom(e, p);
-                }
-                else if (e.mode == 2)
-                {
-                    AttackCards(e, p);
-                }
-                else if (e.mode == 3)
-                {
-                    AttackCharacter(e, p);
-                }
-
+                enemyAttack(e, p);
 
                 //dodaj pkt many graczom
-                if (p.manaPts < 10 )
-                {
-                    p.manaPts = p.manaPts + 1;
-                }
-                if (e.manaPts < 10)
-                {
-                    e.manaPts = e.manaPts + 1;
-                }
-
-
+                addMana(e, p);
                 //zapisz stan gry
-                GameState gs = new GameState(p.cardsOnTable, p.cardsInHand, e.cardsOnTable, e.cardsInHand, p.lifePts, p.manaPts, e.lifePts, e.manaPts);
+                GameState gs_new2 = new GameState(p.cardsOnTable, p.cardsInHand, e.cardsOnTable, e.cardsInHand, p.lifePts, p.manaPts, e.lifePts, e.manaPts, shuffledDeck1, shuffledDeck2);
                 //utworz wezel ze stanem gry 
-                Node node = new Node(current, gs);
+                Node node2 = new Node(current, gs_new2);
 
                 //dodaj nowy wezel do listy dzieci poprzedniego wezla
-                current.addChild(node);
+                current.addChild(node2);
+                //wroc do poprzedniego stanu gry
+                current.gameState.copyState(p, e, gs_curr, shuffledDeck1, shuffledDeck2);
+            }
 
-                //nowy stan gry
-                node.gameState.copyState(p, e, node.gameState);
-                //zwrotka nowego obecnego wezla
-                current = node;
 
-                return current;
-            
+            //wybierz randomowe dziecko do rozegrania playoutu
+            Random r = new Random();
+            int randChild = r.Next(0, current.children.Count);
+
+            //current= current.children[randChild];
+
+            return current.children[randChild];
 
         }
 
@@ -322,7 +433,7 @@ namespace hs_projekt_wzsi
 
         public int Rollout(Node current, Player player, Player enemy, List<Card> shuffledDeck1, List<Card> shuffledDeck2)
         {
-            current.gameState.copyState(player, enemy, current.gameState);
+            current.gameState.copyState(player, enemy, current.gameState, shuffledDeck1, shuffledDeck2);
 
             do
             {
@@ -335,30 +446,11 @@ namespace hs_projekt_wzsi
 
                 //ruch mcts
                 AttackRandom(player, enemy);
-
                 //ruch przeciwnika
-                if (enemy.mode == 1) //losowy
-                {
-                    AttackRandom(enemy, player);
-                }
-                else if (enemy.mode == 2)
-                {
-                    AttackCards(enemy, player);
-                }
-                else if (enemy.mode == 3)
-                {
-                    AttackCharacter(enemy, player);
-                }
-
-                //dodaj pkt many graczom
-                if (player.manaPts < 10)
-                {
-                    player.manaPts = player.manaPts + 1;
-                }
-                if (enemy.manaPts < 10)
-                {
-                    enemy.manaPts = enemy.manaPts + 1;
-                }
+                AttackRandom(enemy, player);
+                //enemyAttack(enemy, player);
+                ////dodaj pkt many graczom
+                //addMana(enemy, player);
 
 
             } while (player.lifePts >= 0 && enemy.lifePts>= 0);
@@ -369,7 +461,7 @@ namespace hs_projekt_wzsi
             }
             else if (player.lifePts == enemy.lifePts)
             {
-                return -0;
+                return 0;
 
             }
             else
@@ -383,13 +475,17 @@ namespace hs_projekt_wzsi
         //update stanu wezlow
         public void Update(Node current, int value)
         {
+            int depth = 0;
             do
             {
                 current.visits++;
                 current.value += value;
                 current = current.parent;
+                depth++;
             }
             while (current != null);
+
+            Console.WriteLine("Depth: {0}", depth);
         }
 
         #endregion 
@@ -409,7 +505,7 @@ namespace hs_projekt_wzsi
                 GetCard(player2, shuffledDeck2, i);
             }
 
-            UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
+           // UpdateCardsState(shuffledDeck1, shuffledDeck2, player1.cardsInHand, player2.cardsInHand, player1, player2);
 
 
             //pierwsza tura- gracze rzucaja karty na stol (dla ulatwienia pierwsza z listy)- nie mozna jej uzyc w tej samej turze
@@ -509,7 +605,6 @@ namespace hs_projekt_wzsi
         {
             if (player.cardsOnTable.Count != 0)
             {
-                //TODO: zrobic ograniczenie
                 int f = GetRandomCard(player.cardsOnTable);
 
                 enemy.lifePts = enemy.lifePts - player.cardsOnTable[f].attackPts;
